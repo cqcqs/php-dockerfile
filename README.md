@@ -10,6 +10,7 @@ docker build -t php74-fpm:1.0 .
 
 ### 阿里云镜像（推荐）
 ```bash
+docker pull registry.cn-hangzhou.aliyuncs.com/cqcqs/php74-fpm
 ```
 
 ## 使用
