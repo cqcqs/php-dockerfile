@@ -1,15 +1,22 @@
 ## cqcqs/php-dockerfile
-PHP7.4官方源镜像支持的扩展有限，自己基于原官方扩展之上，再做了一层包装，包含 `composer`、`PDO`、 `GD`、 `redis`、`mongo`、`swoole` 等扩展
+PHP7.4官方源镜像支持的扩展有限，自己基于原官方扩展之上，再做了一层包装，包含 `composer`、`PDO`、 `GD`、 `redis`、`mongo`、`swoole`、`Imagick` 等扩展
 
 ## 构建镜像
 
 ### 本地构建
 ```bash
-docker build -t php74-fpm:1.0 .
+docker build -t php-fpm:8.2 .
 ```
 
 ### 阿里云镜像（推荐）
 ```bash
+# 8.2
+docker pull registry.cn-hangzhou.aliyuncs.com/cqcqs/php-fpm:8.2
+
+# 7.4
+docker pull registry.cn-hangzhou.aliyuncs.com/cqcqs/php-fpm:7.4
+
+# 7.4 历史版本，未安装Imagick扩展
 docker pull registry.cn-hangzhou.aliyuncs.com/cqcqs/php74-fpm
 ```
 
@@ -20,9 +27,9 @@ docker pull registry.cn-hangzhou.aliyuncs.com/cqcqs/php74-fpm
 ```yml
 version: '1.0'
 services:
-  php7:
-    image: php74-fpm:1.0
-    container_name: php7
+  php8:
+    image: registry.cn-hangzhou.aliyuncs.com/cqcqs/php-fpm:8.2
+    container_name: php8
     restart: always
     ports:
       - 9000:9000
