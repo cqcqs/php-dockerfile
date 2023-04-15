@@ -1,5 +1,5 @@
 ## cqcqs/php-dockerfile
-PHP7.4官方源镜像支持的扩展有限，自己基于原官方扩展之上，再做了一层包装，包含 `composer`、`PDO`、 `GD`、 `redis`、`mongo`、`swoole`、`Imagick` 等扩展
+PHP官方源镜像支持的扩展有限，自己基于原官方扩展之上，再做了一层包装，包含 `composer`、`PDO`、 `GD`、 `redis`、`mongo`、`swoole`、`Imagick` 等扩展
 
 ## 构建镜像
 
