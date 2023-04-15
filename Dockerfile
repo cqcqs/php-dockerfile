@@ -1,10 +1,11 @@
-FROM php:8.2-fpm
+FROM php:7.4-fpm
 
 MAINTAINER Stephen <admin@stephen520.cn>
 
 ARG timezone
 
 ENV TIMEZONE=${timezone:-"Asia/Shanghai"} \
+    SWOOLE_VERSION=4.5.2 \
     IMAGICK_VERSION=3.7.0
 
 RUN sed -i "s@http://deb.debian.org@http://mirrors.aliyun.com@g" /etc/apt/sources.list && \
@@ -45,9 +46,24 @@ RUN php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.ph
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/ && \
 
     # Redis Mongo
-    pecl install redis mongodb swoole imagick && \
+    pecl install redis mongodb imagick && \
     rm -rf /tmp/pear && \
-    docker-php-ext-enable redis mongodb swoole imagick && \
+    docker-php-ext-enable redis mongodb imagick && \
+
+    # Swoole
+    wget https://github.com/swoole/swoole-src/archive/v${SWOOLE_VERSION}.tar.gz -O swoole.tar.gz && \
+    mkdir -p swoole && \
+    tar -xf swoole.tar.gz -C swoole --strip-components=1 && \
+    rm swoole.tar.gz && \
+    ( \
+    cd swoole && \
+    phpize && \
+    ./configure --enable-mysqlnd --enable-sockets --enable-openssl --enable-http2 && \
+    make -j$(nproc) && \
+    make install \
+    ) && \
+    rm -r swoole && \
+    docker-php-ext-enable swoole && \
 
     # GD Library
     docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ && \
