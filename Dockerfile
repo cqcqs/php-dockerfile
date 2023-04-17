@@ -1,31 +1,34 @@
-FROM php:7.4-fpm
+FROM php:7.4-fpm-alpine
 
 MAINTAINER Stephen <admin@stephen520.cn>
 
 ARG timezone
 
 ENV TIMEZONE=${timezone:-"Asia/Shanghai"} \
-    SWOOLE_VERSION=4.5.2 \
-    IMAGICK_VERSION=3.7.0
+    SWOOLE_VERSION=4.5.2
 
-RUN sed -i "s@http://deb.debian.org@http://mirrors.aliyun.com@g" /etc/apt/sources.list && \
-
-    # Libs
-    apt-get update && \
-    apt-get install -y curl \
+# Libs
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache make \
+                       libc-dev \
+                       gcc \
+                       g++ \
                        wget \
-                       telnet \
-                       vim \
-                       git \
-                       npm \
-                       zlib1g-dev \
+                       tzdata \
+                       libxml2-dev \
+                       openssl-dev \
+                       sqlite-dev \
+                       curl-dev \
+                       oniguruma-dev \
+                       autoconf \
                        libzip-dev \
+                       freetype-dev \
+                       libjpeg-turbo-dev \
                        libpng-dev \
-                       libjpeg62-turbo-dev \
-                       libfreetype6-dev \
                        imagemagick \
-                       libmagickwand-dev && \
-
+                       imagemagick-dev && \
+    
     # PHP Library
     docker-php-ext-install zip \
                            pdo \
@@ -35,9 +38,11 @@ RUN sed -i "s@http://deb.debian.org@http://mirrors.aliyun.com@g" /etc/apt/source
                            bcmath \
                            sockets \
                            pcntl && \
-
-    # Clean apt cache
-    rm -rf /var/lib/apt/lists/*
+    # Timezone
+    cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
+    echo "${TIMEZONE}" > /etc/timezone && \
+    echo "[Date]\ndate.timezone=${TIMEZONE}" > /usr/local/etc/php/conf.d/timezone.ini && \
+    apk del tzdata
 
 # composer
 RUN php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.php');" && \
@@ -69,13 +74,8 @@ RUN php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.ph
     docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ && \
     docker-php-ext-install -j$(nproc) gd && \
 
-    # Timezone
-    cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
-    echo "${TIMEZONE}" > /etc/timezone && \
-    echo "[Date]\ndate.timezone=${TIMEZONE}" > /usr/local/etc/php/conf.d/timezone.ini && \
-
     # Clean
-    apt-get clean && rm -rf /var/cache/apt/*
+    apk del && rm -rf /var/cache/apk/*
 
 ADD . /var/www/html
 
@@ -83,4 +83,4 @@ WORKDIR /var/www/html
 
 EXPOSE 9000
 
-CMD ["/usr/local/sbin/php-fpm"]
+CMD ["php-fpm"]
