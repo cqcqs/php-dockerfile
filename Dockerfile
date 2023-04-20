@@ -25,6 +25,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                        libzip-dev \
                        freetype-dev \
                        libjpeg-turbo-dev \
+                       linux-headers \
                        libpng-dev \
                        imagemagick \
                        imagemagick-dev && \
