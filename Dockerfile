@@ -5,7 +5,7 @@ MAINTAINER Stephen <admin@stephen520.cn>
 ARG timezone
 
 ENV TIMEZONE=${timezone:-"Asia/Shanghai"} \
-    SWOOLE_VERSION=4.5.2
+    SWOOLE_VERSION=4.8.0
 
 # Libs
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
@@ -14,6 +14,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                        libc-dev \
                        gcc \
                        g++ \
+                       linux-headers \
                        wget \
                        tzdata \
                        libxml2-dev \
